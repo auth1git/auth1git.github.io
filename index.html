@@ -45,7 +45,7 @@
       let hex = bytes.map(b => b.toString(16).padStart(2, "0")).join("");
 
       // Stretch to 100–125 chars deterministically
-      while (hex.length < 125) {
+      while (hex.length < 400) {
         hex += hex;
       }
 
