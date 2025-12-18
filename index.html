@@ -16,35 +16,27 @@
       // "admin"
     ];
 
-    // ===== LOGIC =====
+    // ===== HELPERS =====
 
-    const params = new URLSearchParams(window.location.search);
-    const user = params.get("q");
     const output = document.getElementById("output");
 
     function showInvalid() {
       output.textContent = "invalid";
     }
 
-    if (!user) {
-      showInvalid();
-      return;
-    }
+    // ===== MAIN =====
 
-    if (user.length < 3 || user.length > 20) {
-      showInvalid();
-      return;
-    }
+    async function main() {
+      const params = new URLSearchParams(window.location.search);
+      const user = params.get("q");
 
-    if (blockedUsers.includes(user)) {
-      showInvalid();
-      return;
-    }
+      if (!user) return showInvalid();
+      if (user.length < 3 || user.length > 20) return showInvalid();
+      if (blockedUsers.includes(user)) return showInvalid();
 
-    // Deterministic hash → long key
-    async function generateKey(input) {
+      // Deterministic hash → long key
       const encoder = new TextEncoder();
-      const data = encoder.encode(input);
+      const data = encoder.encode(user);
 
       const hash = await crypto.subtle.digest("SHA-512", data);
       const bytes = Array.from(new Uint8Array(hash));
@@ -58,12 +50,11 @@
       }
 
       const length = 100 + (bytes[0] % 26); // 100–125
-      return hex.slice(0, length);
+      output.textContent = hex.slice(0, length);
     }
 
-    generateKey(user).then(key => {
-      output.textContent = key;
-    });
+    main();
   </script>
 </body>
 </html>
+
